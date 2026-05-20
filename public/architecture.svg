@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" width="800" height="480">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff6b35"/>
+      <stop offset="1" stop-color="#ffd23f"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="480" fill="#0a0a0b"/>
+  <g font-family="ui-monospace,monospace" font-size="13" fill="#ededf0">
+    <rect x="40" y="40" width="160" height="60" rx="8" fill="#111114" stroke="#27272f"/>
+    <text x="120" y="65" text-anchor="middle">Agents</text>
+    <text x="120" y="85" text-anchor="middle" fill="#8b8b96" font-size="11">Claude · Cursor · Hermes</text>
+
+    <rect x="320" y="40" width="160" height="60" rx="8" fill="#111114" stroke="url(#g)" stroke-width="2"/>
+    <text x="400" y="65" text-anchor="middle">MCP Server</text>
+    <text x="400" y="85" text-anchor="middle" fill="#8b8b96" font-size="11">remember · recall · forget</text>
+
+    <rect x="600" y="40" width="160" height="60" rx="8" fill="#111114" stroke="#27272f"/>
+    <text x="680" y="65" text-anchor="middle">REST API</text>
+    <text x="680" y="85" text-anchor="middle" fill="#8b8b96" font-size="11">/api/v1/*</text>
+
+    <rect x="160" y="180" width="240" height="80" rx="8" fill="#18181d" stroke="url(#g)" stroke-width="2"/>
+    <text x="280" y="210" text-anchor="middle" fill="#ff6b35" font-weight="bold">MiMo VL</text>
+    <text x="280" y="232" text-anchor="middle" font-size="11" fill="#8b8b96">Image → tags + caption</text>
+    <text x="280" y="248" text-anchor="middle" font-size="11" fill="#8b8b96">Entity extraction</text>
+
+    <rect x="440" y="180" width="240" height="80" rx="8" fill="#18181d" stroke="url(#g)" stroke-width="2"/>
+    <text x="560" y="210" text-anchor="middle" fill="#ff6b35" font-weight="bold">MiMo v2.5 Pro</text>
+    <text x="560" y="232" text-anchor="middle" font-size="11" fill="#8b8b96">Importance score · 0-10</text>
+    <text x="560" y="248" text-anchor="middle" font-size="11" fill="#8b8b96">Reasoning over top-K</text>
+
+    <rect x="160" y="320" width="240" height="60" rx="8" fill="#111114" stroke="#27272f"/>
+    <text x="280" y="346" text-anchor="middle">Memory Service</text>
+    <text x="280" y="364" text-anchor="middle" fill="#8b8b96" font-size="11">CRUD · scoring · decay</text>
+
+    <rect x="440" y="320" width="240" height="60" rx="8" fill="#111114" stroke="#27272f"/>
+    <text x="560" y="346" text-anchor="middle">pgvector + Postgres</text>
+    <text x="560" y="364" text-anchor="middle" fill="#8b8b96" font-size="11">Embeddings · metadata · ACL</text>
+
+    <rect x="280" y="420" width="240" height="40" rx="8" fill="#111114" stroke="#27272f"/>
+    <text x="400" y="445" text-anchor="middle">Dashboard · Timeline · Graph</text>
+  </g>
+
+  <g stroke="#27272f" stroke-width="1.5" fill="none">
+    <path d="M120 100 L 280 180" />
+    <path d="M400 100 L 280 180" />
+    <path d="M400 100 L 560 180" />
+    <path d="M680 100 L 560 180" />
+    <path d="M280 260 L 280 320" />
+    <path d="M560 260 L 560 320" />
+    <path d="M280 260 L 560 320" stroke-dasharray="4 4" stroke="#ff6b35" opacity="0.6"/>
+    <path d="M400 380 L 400 420" />
+  </g>
+</svg>
