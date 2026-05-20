@@ -85,7 +85,7 @@ Only cite memories that materially support the answer. If no memory is relevant,
         { role: "system", content: sys },
         { role: "user", content: `Query: ${query}\n\nMemories:\n${ctx}` },
       ],
-      1500,
+      400,
     );
     const json = extractJson<Partial<RecallShape>>(raw);
     return {
@@ -131,7 +131,7 @@ Return JSON: {"summary": "...", "tags": ["...", ...]}`,
           ] as unknown as Array<unknown>,
         },
       ],
-      800,
+      300,
     );
     const json = extractJson<{ summary?: string; tags?: string[] }>(raw);
     return {
@@ -163,7 +163,7 @@ export async function scoreImportance(
         },
         { role: "user", content },
       ],
-      400,
+      150,
     );
     const json = extractJson<{ importance?: number; rationale?: string }>(raw);
     return {
