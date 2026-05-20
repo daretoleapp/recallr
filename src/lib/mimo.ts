@@ -41,9 +41,16 @@ async function chat(model: string, messages: Msg[], maxTokens = 600): Promise<st
   });
   if (!r.ok) {
     const body = await r.text().catch(() => "");
+    console.error(`[mimo] upstream ${r.status}:`, body.slice(0, 300));
     throw new MimoUpstreamError(r.status, body.slice(0, 500));
   }
-  const data = await r.json();
+  const data = await r.json().catch((e) => {
+    console.error("[mimo] json parse failed:", e);
+    return null;
+  });
+  if (!data) {
+    throw new MimoUpstreamError(0, "invalid JSON");
+  }
   const msg = data.choices?.[0]?.message ?? {};
   // MiMo Pro on DeepInfra returns reasoning text in `reasoning` field with content null.
   // Prefer content; fall back to reasoning so the answer is never empty.
@@ -51,6 +58,9 @@ async function chat(model: string, messages: Msg[], maxTokens = 600): Promise<st
     (typeof msg.content === "string" && msg.content) ||
     (typeof msg.reasoning === "string" && msg.reasoning) ||
     "";
+  if (!content) {
+    console.error("[mimo] empty content. Raw msg:", JSON.stringify(msg).slice(0, 300));
+  }
   return content;
 }
 
@@ -59,7 +69,7 @@ type RecallShape = { answer: string; reasoning: string; cited: string[] };
 export async function reasonOverMemories(
   query: string,
   memories: Array<{ id: string; content: string; tags: string[] }>,
-): Promise<RecallShape & { source: "mimo" | "corpus" }> {
+): Promise<RecallShape & { source: "mimo" | "corpus"; debug?: string }> {
   const ctx = memories
     .map((m, i) => `[${i + 1}] (${m.id}) tags=${m.tags.join(",")} :: ${m.content}`)
     .join("\n");
@@ -79,12 +89,13 @@ Only cite memories that materially support the answer. If no memory is relevant,
     );
     const json = extractJson<Partial<RecallShape>>(raw);
     return {
-      answer: json.answer ?? "",
-      reasoning: json.reasoning ?? "",
-      cited: json.cited ?? [],
+      answer: json.answer ?? raw.slice(0, 400),
+      reasoning: json.reasoning ?? "MiMo Pro answered without structured JSON; raw response shown.",
+      cited: json.cited ?? memories.slice(0, 3).map((m) => m.id),
       source: "mimo" as const,
     };
   } catch (e) {
+    const errMsg = `${(e as Error).name}: ${(e as Error).message}`.slice(0, 200);
     if (!isMimoFallback(e)) throw e;
     const top = memories.slice(0, 3);
     return {
@@ -96,6 +107,7 @@ Only cite memories that materially support the answer. If no memory is relevant,
         "Corpus mode (set OPENROUTER_API_KEY for MiMo Pro reasoning). Returned top-K by recency.",
       cited: top.map((m) => m.id),
       source: "corpus" as const,
+      debug: errMsg,
     };
   }
 }
