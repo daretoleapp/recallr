@@ -34,7 +34,7 @@ async function chat(model: string, messages: Msg[], maxTokens = 600): Promise<st
     headers: {
       Authorization: `Bearer ${key}`,
       "Content-Type": "application/json",
-      "HTTP-Referer": "https://recallr.vercel.app",
+      "HTTP-Referer": "https://recallr-orcin.vercel.app",
       "X-Title": "Recallr",
     },
     body: JSON.stringify({ model, messages, max_tokens: maxTokens }),
@@ -44,7 +44,14 @@ async function chat(model: string, messages: Msg[], maxTokens = 600): Promise<st
     throw new MimoUpstreamError(r.status, body.slice(0, 500));
   }
   const data = await r.json();
-  return (data.choices?.[0]?.message?.content as string) ?? "";
+  const msg = data.choices?.[0]?.message ?? {};
+  // MiMo Pro on DeepInfra returns reasoning text in `reasoning` field with content null.
+  // Prefer content; fall back to reasoning so the answer is never empty.
+  const content =
+    (typeof msg.content === "string" && msg.content) ||
+    (typeof msg.reasoning === "string" && msg.reasoning) ||
+    "";
+  return content;
 }
 
 type RecallShape = { answer: string; reasoning: string; cited: string[] };
@@ -68,7 +75,7 @@ Only cite memories that materially support the answer. If no memory is relevant,
         { role: "system", content: sys },
         { role: "user", content: `Query: ${query}\n\nMemories:\n${ctx}` },
       ],
-      700,
+      1500,
     );
     const json = extractJson<Partial<RecallShape>>(raw);
     return {
@@ -112,7 +119,7 @@ Return JSON: {"summary": "...", "tags": ["...", ...]}`,
           ] as unknown as Array<unknown>,
         },
       ],
-      400,
+      800,
     );
     const json = extractJson<{ summary?: string; tags?: string[] }>(raw);
     return {
@@ -144,7 +151,7 @@ export async function scoreImportance(
         },
         { role: "user", content },
       ],
-      120,
+      400,
     );
     const json = extractJson<{ importance?: number; rationale?: string }>(raw);
     return {
